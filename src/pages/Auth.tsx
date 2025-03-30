@@ -17,7 +17,7 @@ export default function Auth() {
     await loginWithRedirect({
       appState: { 
         returnTo: '/dashboard',
-        role: role.charAt(0).toUpperCase() + role.slice(1)
+        role: role
       }
     });
   };
