@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-pattern {
+  background-color: #0A1628;
+  background-image: linear-gradient(rgba(79, 142, 247, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 142, 247, 0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #4F8EF7 0%,
+    #53D8FA 50%,
+    #4F8EF7 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+.glow-card {
+  box-shadow: 0 0 80px rgba(79, 142, 247, 0.15);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feature-item {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.feature-item:nth-child(1) { animation-delay: 0.2s; }
+.feature-item:nth-child(2) { animation-delay: 0.4s; }
+.feature-item:nth-child(3) { animation-delay: 0.6s; }
+.feature-item:nth-child(4) { animation-delay: 0.8s; }
+
+.prompt-box {
+  min-height: 24px;
+  line-height: 24px;
+}
+
+.agent-status {
+  min-height: 20px;
+  line-height: 20px;
+}
+
+.typing-text {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.typing-text.typing {
+  animation: typing 2s steps(40, end);
+}
+
+.typing-text.erasing {
+  animation: erasing 2s steps(40, end);
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes erasing {
+  from { width: 100% }
+  to { width: 0 }
+}
