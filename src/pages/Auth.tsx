@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { loginWithRedirect, loginWithPopup, isAuthenticated, user } = useAuth0();
   const [isSignIn, setIsSignIn] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'patient' | 'doctor' | 'hospital' | null>(null);
@@ -15,17 +13,6 @@ export default function Auth() {
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      navigate('/dashboard', { 
-        state: { 
-          role: selectedRole?.charAt(0).toUpperCase() + selectedRole?.slice(1), 
-          name: selectedRole?.charAt(0).toUpperCase() + selectedRole?.slice(1)
-        }
-      });
-    }
-  }, [isAuthenticated, user, navigate, selectedRole]);
-
-  useEffect(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmailValid = emailRegex.test(email);
     const isPasswordValid = password.length > 0;
@@ -33,50 +20,17 @@ export default function Auth() {
     setIsFormValid(isEmailValid && isPasswordValid && selectedRole !== null && isNameValid);
   }, [email, password, selectedRole, name]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent, provider?: string) => {
     e.preventDefault();
-    if (!isFormValid || !selectedRole) return;
-
-    try {
-      await loginWithRedirect({
-        authorizationParams: {
-          screen_hint: isSignIn ? 'signin' : 'signup',
-          login_hint: email
-        },
-        appState: {
-          returnTo: '/dashboard',
-          role: selectedRole,
-          name: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)
-        }
-      });
-    } catch (error) {
-      console.error('Authentication error:', error);
-    }
-  };
-
-  const handleSocialLogin = async (provider: 'google' | 'apple') => {
-    if (!selectedRole) return;
-
-    try {
-      await loginWithPopup({
-        authorizationParams: {
-          connection: provider === 'google' ? 'google-oauth2' : 'apple',
-        },
-        appState: {
-          returnTo: '/dashboard',
-          role: selectedRole,
-          name: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)
-        }
-      });
-    } catch (error) {
-      console.error('Social login error:', error);
+    if (selectedRole) {
+      navigate('/dashboard', { state: { role: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1), name } });
     }
   };
 
   return (
     <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center px-4">
       <Link to="/" className="text-4xl font-bold text-white mb-8">
-        Navis<span className="text-[#4F8EF7]">AI</span>
+        Medi<span className="text-[#4F8EF7]">Call</span>
       </Link>
 
       <div className="relative w-full max-w-md">
@@ -188,10 +142,10 @@ export default function Auth() {
           {/* Social Login */}
           <div className="space-y-3">
             <button 
-              disabled={!selectedRole}
-              onClick={() => handleSocialLogin('google')}
+              disabled={!selectedRole || !name.trim()}
+              onClick={(e) => handleSubmit(e, 'google')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                selectedRole
+                selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
                   : 'bg-[#1A1A1A] text-gray-500 cursor-not-allowed'
               }`}
@@ -200,10 +154,10 @@ export default function Auth() {
               Continue with Google
             </button>
             <button 
-              disabled={!selectedRole}
-              onClick={() => handleSocialLogin('apple')}
+              disabled={!selectedRole || !name.trim()}
+              onClick={(e) => handleSubmit(e, 'apple')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                selectedRole
+                selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
                   : 'bg-[#1A1A1A] text-gray-500 cursor-not-allowed'
               }`}

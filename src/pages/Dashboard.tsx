@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth0();
   const { role, name } = location.state || { role: 'Unknown', name: 'User' };
   const [activeTab, setActiveTab] = useState('Doctors');
 
   const handleLogout = () => {
-    logout({ 
-      logoutParams: {
-        returnTo: window.location.origin + '/auth'
-      }
-    });
+    navigate('/');
   };
 
   const renderPatientDashboard = () => (
@@ -93,7 +87,7 @@ export default function Dashboard() {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link to="/" className="text-2xl font-bold text-white">
-              Navis<span className="text-[#4F8EF7]">AI</span>
+              Medi<span className="text-[#4F8EF7]">Call</span>
             </Link>
           </div>
           <span className="text-gray-300 text-lg">Dashboard - {name}</span>
