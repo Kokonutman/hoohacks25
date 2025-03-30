@@ -2,13 +2,16 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Search, Square, CheckSquare } from "lucide-react";
+interface DashboardProps {
+  role: string;
+}
 
-export default function Dashboard() {
+export default function Dashboard({ role }: DashboardProps) {
+ {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user, isAuthenticated, isLoading } = useAuth0();
   const [activeTab, setActiveTab] = useState("Doctors");
-  const role = location?.state?.role || "patient";
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {

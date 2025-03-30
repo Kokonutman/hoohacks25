@@ -3,7 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { UserRound, Stethoscope, Building2 } from "lucide-react";
 
-export default function Auth() {
+interface AuthProps {
+  setRole: (role: string) => void;
+}
+
+export default function Auth({ setRole }: AuthProps) {
   const navigate = useNavigate();
   const { loginWithRedirect } = useAuth0();
 
@@ -17,7 +21,6 @@ export default function Auth() {
     await loginWithRedirect({
       appState: {
         returnTo: "/dashboard",
-        role: role,
       },
     });
   };
@@ -40,7 +43,10 @@ export default function Auth() {
           {roles.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
-              onClick={() => handleRoleSelect(id)}
+              onClick={() => {
+                setRole(id); // ✅ call setRole first
+                handleRoleSelect(id); // ✅ then trigger Auth0 redirect
+              }}
               className="relative bg-[#1E1E1E] rounded-xl p-16 flex flex-col items-center justify-center gap-8 transition-all duration-300 group hover:bg-[#2A2A2A] hover:ring-2 hover:ring-[#4F8EF7] hover:shadow-[0_0_30px_rgba(79,142,247,0.2)]"
             >
               <Icon className="w-20 h-20 text-gray-400 group-hover:text-[#4F8EF7] transition-all duration-300" />
