@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Check, Mic } from 'lucide-react';
-import Spline from '@splinetool/react-spline';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Check, Mic } from "lucide-react";
+import Spline from "@splinetool/react-spline";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -10,9 +10,9 @@ export default function Home() {
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [agentStatus, setAgentStatus] = useState({
     appointment: "Checking availability...",
-    insurance: "Verifying coverage..."
+    insurance: "Verifying coverage...",
   });
-  
+
   const samplePrompts = [
     "I need pediatricians near me who prescribe medicines",
     "Schedule an appointment with Dr. Smith next week",
@@ -20,30 +20,30 @@ export default function Home() {
     "Find an orthopedic specialist within 5 miles",
     "Book a dental cleaning for next month",
     "Is my prescription ready for pickup?",
-    "What's the earliest available slot for a checkup?"
+    "What's the earliest available slot for a checkup?",
   ];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    
+
     const updateStatus = () => {
       if (isTyping) {
         setAgentStatus({
           appointment: "Checking availability...",
-          insurance: "Verifying coverage..."
+          insurance: "Verifying coverage...",
         });
         if (isTextVisible) {
           timer = setTimeout(() => {
             setAgentStatus({
               appointment: "Appointment available",
-              insurance: "Coverage verified"
+              insurance: "Coverage verified",
             });
           }, 3000);
         }
       } else {
         setAgentStatus({
           appointment: "",
-          insurance: ""
+          insurance: "",
         });
       }
     };
@@ -67,7 +67,7 @@ export default function Home() {
 
       completionTimer = setTimeout(() => {
         setIsTextVisible(false);
-        
+
         visibilityTimer = setTimeout(() => {
           setCurrentPromptIndex((prev) => (prev + 1) % samplePrompts.length);
           startTypingCycle();
@@ -82,7 +82,7 @@ export default function Home() {
       clearTimeout(completionTimer);
       clearTimeout(visibilityTimer);
     };
-  }, []);
+  }, [samplePrompts.length]);
 
   return (
     <div className="min-h-screen bg-pattern text-white">
@@ -91,9 +91,9 @@ export default function Home() {
           {/* Left Section */}
           <div className="space-y-12">
             <div className="flex items-center gap-4">
-              <img 
-                src="https://i.imgur.com/WtWtsZ1.png" 
-                alt="MediCall Logo" 
+              <img
+                src="https://i.imgur.com/WtWtsZ1.png"
+                alt="MediCall Logo"
                 className="h-[64px] w-[64px] rounded-lg object-cover"
               />
               <h1 className="text-5xl font-bold">
@@ -103,17 +103,28 @@ export default function Home() {
 
             <div className="space-y-8">
               <h2 className="text-4xl font-bold leading-tight">
-                Your Voice, Your Care,<br />
+                Your Voice, Your Care,
+                <br />
                 <span className="shimmer-text">One Call Away.</span>
               </h2>
               <p className="text-gray-400 text-lg max-w-xl">
-                Lets patients instantly verify insurance, find nearby hospitals, receive symptom triage, and book appointments - all through one simple call.
+                Lets patients instantly verify insurance, find nearby hospitals,
+                receive symptom triage, and book appointments - all through one
+                simple call.
               </p>
             </div>
 
             <div className="space-y-6">
-              {['Real-time speech-to-speech AI', 'In-network hospital finder', 'Symptom triage and escalation', 'Calendar-integrated bookings'].map((feature, index) => (
-                <div key={feature} className="flex items-center gap-4 feature-item">
+              {[
+                "Real-time speech-to-speech AI",
+                "In-network hospital finder",
+                "Symptom triage and escalation",
+                "Calendar-integrated bookings",
+              ].map((feature, index) => (
+                <div
+                  key={feature}
+                  className="flex items-center gap-4 feature-item"
+                >
                   <div className="h-5 w-5 rounded-full bg-[#4F8EF7]/10 flex items-center justify-center">
                     <Check className="h-3 w-3 text-[#4F8EF7]" />
                   </div>
@@ -124,7 +135,7 @@ export default function Home() {
 
             <div>
               <button
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate("/auth")}
                 className="bg-[#4F8EF7] text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 hover:bg-[#3D7FE8] flex items-center gap-3"
               >
                 <Mic className="h-5 w-5" />
@@ -141,7 +152,9 @@ export default function Home() {
                   <Mic className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-lg font-semibold">MediCall is listening...</div>
+                  <div className="text-lg font-semibold">
+                    MediCall is listening...
+                  </div>
                   <div className="text-gray-400 text-sm">Try saying:</div>
                 </div>
               </div>
@@ -149,7 +162,11 @@ export default function Home() {
               <div className="bg-[#081221] rounded-lg p-4 mb-6">
                 <div className="prompt-box text-gray-400">
                   {isTextVisible && (
-                    <span className={`typing-text ${isTyping ? 'typing' : 'erasing'}`}>
+                    <span
+                      className={`typing-text ${
+                        isTyping ? "typing" : "erasing"
+                      }`}
+                    >
                       {samplePrompts[currentPromptIndex]}
                     </span>
                   )}
@@ -163,11 +180,15 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#081221] rounded-lg p-4">
                   <h3 className="font-semibold mb-2">Appointment Agent</h3>
-                  <p className="agent-status text-gray-400 text-sm transition-all duration-300">{agentStatus.appointment}</p>
+                  <p className="agent-status text-gray-400 text-sm transition-all duration-300">
+                    {agentStatus.appointment}
+                  </p>
                 </div>
                 <div className="bg-[#081221] rounded-lg p-4">
                   <h3 className="font-semibold mb-2">Insurance Agent</h3>
-                  <p className="agent-status text-gray-400 text-sm transition-all duration-300">{agentStatus.insurance}</p>
+                  <p className="agent-status text-gray-400 text-sm transition-all duration-300">
+                    {agentStatus.insurance}
+                  </p>
                 </div>
               </div>
             </div>
