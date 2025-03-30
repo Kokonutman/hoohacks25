@@ -1,34 +1,53 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Dashboard() {
   const location = useLocation();
-  const { logout } = useAuth0();
-  const { role, name } = location.state || { role: 'Unknown', name: 'User' };
-  const [activeTab, setActiveTab] = useState('Doctors');
+  const { loginWithRedirect, logout, isAuthenticated, user, isLoading } =
+    useAuth0();
+  const { role } = location.state || { role: "Unknown" };
+  const [activeTab, setActiveTab] = useState("Doctors");
+
+  // Automatically redirect to Auth0 login if not authenticated
+  if (!isLoading && !isAuthenticated) {
+    loginWithRedirect();
+    return null;
+  }
+
+  const displayName = user?.name || "User";
 
   const handleLogout = () => {
     logout({
       logoutParams: {
-        returnTo: "https://curemedaddy.tech/"
-      }
+        returnTo: "https://curemedaddy.tech/",
+      },
     });
   };
 
   const renderPatientDashboard = () => (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="bg-[#1E1E1E] rounded-xl p-6 shadow-lg hover:shadow-[0_0_15px_rgba(79,142,247,0.2)] transition-all duration-300">
-        <h2 className="text-xl font-semibold text-white mb-4">Personal Information</h2>
-        <div className="text-gray-400">View and manage your personal details</div>
+        <h2 className="text-xl font-semibold text-white mb-4">
+          Personal Information
+        </h2>
+        <div className="text-gray-400">
+          View and manage your personal details
+        </div>
       </div>
       <div className="bg-[#1E1E1E] rounded-xl p-6 shadow-lg hover:shadow-[0_0_15px_rgba(79,142,247,0.2)] transition-all duration-300">
         <h2 className="text-xl font-semibold text-white mb-4">Appointments</h2>
-        <div className="text-gray-400">Schedule and manage your appointments</div>
+        <div className="text-gray-400">
+          Schedule and manage your appointments
+        </div>
       </div>
       <div className="bg-[#1E1E1E] rounded-xl p-6 shadow-lg hover:shadow-[0_0_15px_rgba(79,142,247,0.2)] transition-all duration-300">
-        <h2 className="text-xl font-semibold text-white mb-4">Medical History</h2>
-        <div className="text-gray-400">View your medical records and history</div>
+        <h2 className="text-xl font-semibold text-white mb-4">
+          Medical History
+        </h2>
+        <div className="text-gray-400">
+          View your medical records and history
+        </div>
       </div>
     </div>
   );
@@ -36,12 +55,16 @@ export default function Dashboard() {
   const renderDoctorDashboard = () => (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div className="bg-[#1E1E1E] rounded-xl p-6 shadow-lg hover:shadow-[0_0_15px_rgba(79,142,247,0.2)] transition-all duration-300">
-        <h2 className="text-xl font-semibold text-white mb-4">Personal Information</h2>
+        <h2 className="text-xl font-semibold text-white mb-4">
+          Personal Information
+        </h2>
         <div className="text-gray-400">Manage your professional profile</div>
       </div>
       <div className="bg-[#1E1E1E] rounded-xl p-6 shadow-lg hover:shadow-[0_0_15px_rgba(79,142,247,0.2)] transition-all duration-300">
         <h2 className="text-xl font-semibold text-white mb-4">Appointments</h2>
-        <div className="text-gray-400">View and manage patient appointments</div>
+        <div className="text-gray-400">
+          View and manage patient appointments
+        </div>
       </div>
     </div>
   );
@@ -50,14 +73,20 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="border-b border-[#2A2A2A]">
         <div className="grid grid-cols-5 max-w-4xl mx-auto">
-          {['Doctors', 'Patients', 'Appointments', 'Prescriptions', 'Symptoms'].map((tab) => (
+          {[
+            "Doctors",
+            "Patients",
+            "Appointments",
+            "Prescriptions",
+            "Symptoms",
+          ].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`py-2 text-sm font-medium transition-all duration-300 ${
                 activeTab === tab
-                  ? 'text-[#4F8EF7] border-b-2 border-[#4F8EF7]'
-                  : 'text-gray-400 hover:text-gray-300'
+                  ? "text-[#4F8EF7] border-b-2 border-[#4F8EF7]"
+                  : "text-gray-400 hover:text-gray-300"
               }`}
             >
               {tab}
@@ -74,14 +103,14 @@ export default function Dashboard() {
 
   const renderDashboard = () => {
     switch (role.toLowerCase()) {
-      case 'patient':
+      case "patient":
         return renderPatientDashboard();
-      case 'doctor':
+      case "doctor":
         return renderDoctorDashboard();
-      case 'hospital':
+      case "hospital":
         return renderHospitalDashboard();
       default:
-        return <div>Unknown role</div>;
+        return <div className="text-white text-center">Unknown role</div>;
     }
   };
 
@@ -95,7 +124,9 @@ export default function Dashboard() {
               Medi<span className="text-[#4F8EF7]">Call</span>
             </Link>
           </div>
-          <span className="text-gray-300 text-lg">Dashboard - {name}</span>
+          <span className="text-gray-300 text-lg">
+            Dashboard - {displayName}
+          </span>
           <button
             onClick={handleLogout}
             className="px-4 py-1.5 bg-[#2A2A2A] text-[12px] text-[#4F8EF7] rounded-lg hover:bg-[#3A3A3A] transition-all duration-300"
@@ -106,9 +137,7 @@ export default function Dashboard() {
       </nav>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        {renderDashboard()}
-      </div>
+      <div className="container mx-auto px-4 py-8">{renderDashboard()}</div>
     </div>
   );
 }
