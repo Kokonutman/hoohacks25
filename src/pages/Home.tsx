@@ -94,7 +94,7 @@ export default function Home() {
               <img 
                 src="https://i.imgur.com/WtWtsZ1.png" 
                 alt="MediCall Logo" 
-                className="h-12 w-12 rounded-lg object-cover"
+                className="h-[64px] w-[64px] rounded-lg object-cover"
               />
               <h1 className="text-5xl font-bold">
                 Medi<span className="text-[#4F8EF7]">Call</span>

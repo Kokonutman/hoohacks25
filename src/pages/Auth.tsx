@@ -1,16 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Auth() {
   const navigate = useNavigate();
+  const { loginWithRedirect, user, isAuthenticated, isLoading } = useAuth0();
   const [isSignIn, setIsSignIn] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'patient' | 'doctor' | 'hospital' | null>(null);
+  const [selectedRole, setSelectedRole] = useState<'patient' | 'doctor' | 'hospital'>('patient');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate('/dashboard', { 
+        state: { 
+          role: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1),
+          name: name || user.name
+        }
+      });
+    }
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,57 +33,84 @@ export default function Auth() {
     setIsFormValid(isEmailValid && isPasswordValid && selectedRole !== null && isNameValid);
   }, [email, password, selectedRole, name]);
 
-  const handleSubmit = (e: React.FormEvent, provider?: string) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedRole) {
-      navigate('/dashboard', { state: { role: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1), name } });
-    }
+    await loginWithRedirect({
+      appState: {
+        returnTo: "/dashboard",
+        role: selectedRole,
+        name: name
+      },
+      authorizationParams: {
+        screen_hint: isSignIn ? 'signin' : 'signup',
+      }
+    });
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#121212] flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center px-4">
-      <Link to="/" className="text-4xl font-bold text-white mb-8">
-        Medi<span className="text-[#4F8EF7]">Call</span>
+      <Link to="/" className="flex items-center gap-3 mb-8">
+        <img 
+          src="https://i.imgur.com/WtWtsZ1.png" 
+          alt="MediCall Logo" 
+          className="h-12 w-12 rounded-lg object-cover"
+        />
+        <span className="text-4xl font-bold text-white">
+          Medi<span className="text-[#4F8EF7]">Call</span>
+        </span>
       </Link>
 
       <div className="relative w-full max-w-md">
         <div className="absolute -inset-1 bg-[#4F8EF7] opacity-25 blur rounded-xl"></div>
         <div className="relative bg-[#1E1E1E] rounded-xl p-8">
-          <h2 className="text-xl text-gray-300 text-center">Auth0</h2>
-          <div className="w-full border-t border-gray-700 my-4"></div>
-
-          {/* Role Selection */}
-          <div className="mb-4">
-            <h3 className="text-gray-400 text-sm mb-3 text-center">Profession</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {['Patient', 'Doctor', 'Hospital'].map((role) => (
-                <button
-                  key={role}
-                  onClick={() => setSelectedRole(role.toLowerCase() as any)}
-                  className={`py-2 px-4 rounded-lg transition-all duration-300 ${
-                    selectedRole === role.toLowerCase()
-                      ? 'bg-[#4F8EF7] text-white'
-                      : 'bg-[#2A2A2A] text-gray-300 hover:bg-[#3A3A3A]'
-                  }`}
-                >
-                  {role}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Name Input */}
           <div className="mb-6">
             <input
               type="text"
-              placeholder="Full Name"
+              placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full bg-[#2A2A2A] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7]"
             />
           </div>
 
-          <div className="w-full border-t border-gray-700 mb-6"></div>
+          {/* Role Selection */}
+          <div className="mb-6">
+            <div className="relative bg-[#2A2A2A]/50 p-1 rounded-lg">
+              <div 
+                className="absolute inset-y-1 transition-all duration-300 ease-out bg-[#4F8EF7] rounded-md"
+                style={{
+                  width: '33.333333%',
+                  transform: `translateX(${
+                    selectedRole === 'patient' ? '0%' : 
+                    selectedRole === 'doctor' ? '100%' : 
+                    '200%'
+                  })`
+                }}
+              ></div>
+              <div className="relative grid grid-cols-3 gap-1">
+                {['Patient', 'Doctor', 'Hospital'].map((role) => (
+                  <button
+                    key={role}
+                    onClick={() => setSelectedRole(role.toLowerCase() as any)}
+                    className={`py-2 px-4 rounded-md text-sm font-medium transition-colors duration-300 relative z-10 ${
+                      selectedRole === role.toLowerCase() ? 'text-white' : 'text-gray-400'
+                    }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Auth Tabs */}
           <div className="flex mb-6">
@@ -143,7 +183,14 @@ export default function Auth() {
           <div className="space-y-3">
             <button 
               disabled={!selectedRole || !name.trim()}
-              onClick={(e) => handleSubmit(e, 'google')}
+              onClick={() => loginWithRedirect({
+                appState: {
+                  returnTo: "/dashboard",
+                  role: selectedRole,
+                  name: name
+                },
+                connection: 'google-oauth2'
+              })}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                 selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
@@ -155,7 +202,14 @@ export default function Auth() {
             </button>
             <button 
               disabled={!selectedRole || !name.trim()}
-              onClick={(e) => handleSubmit(e, 'apple')}
+              onClick={() => loginWithRedirect({
+                appState: {
+                  returnTo: "/dashboard",
+                  role: selectedRole,
+                  name: name
+                },
+                connection: 'apple'
+              })}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                 selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
