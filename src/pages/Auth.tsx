@@ -1,5 +1,4 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { UserRound, Stethoscope, Building2 } from "lucide-react";
 
@@ -8,7 +7,6 @@ interface AuthProps {
 }
 
 export default function Auth({ setRole }: AuthProps) {
-  const navigate = useNavigate();
   const { loginWithRedirect } = useAuth0();
 
   const roles = [
@@ -17,7 +15,7 @@ export default function Auth({ setRole }: AuthProps) {
     { id: "hospital", label: "Hospital", icon: Building2 },
   ];
 
-  const handleRoleSelect = async (role: string) => {
+  const handleRoleSelect = async () => {
     await loginWithRedirect({
       appState: {
         returnTo: "/dashboard",
@@ -45,7 +43,7 @@ export default function Auth({ setRole }: AuthProps) {
               key={id}
               onClick={() => {
                 setRole(id); // ✅ call setRole first
-                handleRoleSelect(id); // ✅ then trigger Auth0 redirect
+                handleRoleSelect(); // ✅ then trigger Auth0 redirect
               }}
               className="relative bg-[#1E1E1E] rounded-xl p-16 flex flex-col items-center justify-center gap-8 transition-all duration-300 group hover:bg-[#2A2A2A] hover:ring-2 hover:ring-[#4F8EF7] hover:shadow-[0_0_30px_rgba(79,142,247,0.2)]"
             >
