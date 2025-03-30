@@ -8,7 +8,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { logout, user, isAuthenticated, isLoading } = useAuth0();
   const [activeTab, setActiveTab] = useState("Doctors");
-  const role = location?.state?.role || "Unknown";
+  const role = location?.state?.role || "patient";
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
