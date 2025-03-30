@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Auth() {
   const navigate = useNavigate();
+  const { loginWithRedirect, loginWithPopup, isAuthenticated, user } = useAuth0();
   const [isSignIn, setIsSignIn] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'patient' | 'doctor' | 'hospital' | null>(null);
@@ -13,6 +15,17 @@ export default function Auth() {
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate('/dashboard', { 
+        state: { 
+          role: selectedRole?.charAt(0).toUpperCase() + selectedRole?.slice(1), 
+          name: user.name || name 
+        }
+      });
+    }
+  }, [isAuthenticated, user, navigate, selectedRole, name]);
+
+  useEffect(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmailValid = emailRegex.test(email);
     const isPasswordValid = password.length > 0;
@@ -20,10 +33,43 @@ export default function Auth() {
     setIsFormValid(isEmailValid && isPasswordValid && selectedRole !== null && isNameValid);
   }, [email, password, selectedRole, name]);
 
-  const handleSubmit = (e: React.FormEvent, provider?: string) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedRole) {
-      navigate('/dashboard', { state: { role: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1), name } });
+    if (!isFormValid) return;
+
+    try {
+      await loginWithRedirect({
+        authorizationParams: {
+          screen_hint: isSignIn ? 'signin' : 'signup',
+          login_hint: email
+        },
+        appState: {
+          returnTo: '/dashboard',
+          role: selectedRole,
+          name
+        }
+      });
+    } catch (error) {
+      console.error('Authentication error:', error);
+    }
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'apple') => {
+    if (!selectedRole || !name.trim()) return;
+
+    try {
+      await loginWithPopup({
+        authorizationParams: {
+          connection: provider === 'google' ? 'google-oauth2' : 'apple',
+        },
+        appState: {
+          returnTo: '/dashboard',
+          role: selectedRole,
+          name
+        }
+      });
+    } catch (error) {
+      console.error('Social login error:', error);
     }
   };
 
@@ -143,7 +189,7 @@ export default function Auth() {
           <div className="space-y-3">
             <button 
               disabled={!selectedRole || !name.trim()}
-              onClick={(e) => handleSubmit(e, 'google')}
+              onClick={() => handleSocialLogin('google')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                 selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
@@ -155,7 +201,7 @@ export default function Auth() {
             </button>
             <button 
               disabled={!selectedRole || !name.trim()}
-              onClick={(e) => handleSubmit(e, 'apple')}
+              onClick={() => handleSocialLogin('apple')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                 selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
