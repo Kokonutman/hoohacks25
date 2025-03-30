@@ -7,7 +7,6 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ role }: DashboardProps) {
- {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout, user, isAuthenticated, isLoading } = useAuth0();
