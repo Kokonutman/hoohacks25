@@ -1,28 +1,48 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
+
+interface DecodedToken {
+  name: string;
+  role: string;
+  exp: number;
+}
 
 export default function Dashboard() {
-  const location = useLocation();
-  const { loginWithRedirect, logout, isAuthenticated, user, isLoading } =
-    useAuth0();
-  const { role } = location.state || { role: "Unknown" };
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Doctors");
+  const [name, setName] = useState("User");
+  const [role, setRole] = useState("Unknown");
 
-  // Automatically redirect to Auth0 login if not authenticated
-  if (!isLoading && !isAuthenticated) {
-    loginWithRedirect();
-    return null;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-  const displayName = user?.name || "User";
+    try {
+      const decoded: DecodedToken = jwtDecode(token);
+
+      // Expired token check
+      if (decoded.exp * 1000 < Date.now()) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      setName(decoded.name || "User");
+      setRole(decoded.role || "Unknown");
+    } catch (err) {
+      console.error("Invalid token", err);
+      localStorage.removeItem("token");
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
-    logout({
-      logoutParams: {
-        returnTo: "https://curemedaddy.tech/",
-      },
-    });
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   const renderPatientDashboard = () => (
@@ -124,9 +144,7 @@ export default function Dashboard() {
               Medi<span className="text-[#4F8EF7]">Call</span>
             </Link>
           </div>
-          <span className="text-gray-300 text-lg">
-            Dashboard - {displayName}
-          </span>
+          <span className="text-gray-300 text-lg">Dashboard - {name}</span>
           <button
             onClick={handleLogout}
             className="px-4 py-1.5 bg-[#2A2A2A] text-[12px] text-[#4F8EF7] rounded-lg hover:bg-[#3A3A3A] transition-all duration-300"
