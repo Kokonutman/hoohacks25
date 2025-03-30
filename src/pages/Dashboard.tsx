@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Dashboard() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth0();
   const { role, name } = location.state || { role: 'Unknown', name: 'User' };
   const [activeTab, setActiveTab] = useState('Doctors');
 
   const handleLogout = () => {
-    navigate('/');
+    logout({ 
+      logoutParams: {
+        returnTo: window.location.origin + '/auth'
+      }
+    });
   };
 
   const renderPatientDashboard = () => (

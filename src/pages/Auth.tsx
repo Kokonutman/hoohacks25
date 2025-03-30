@@ -19,11 +19,11 @@ export default function Auth() {
       navigate('/dashboard', { 
         state: { 
           role: selectedRole?.charAt(0).toUpperCase() + selectedRole?.slice(1), 
-          name: user.name || name 
+          name: selectedRole?.charAt(0).toUpperCase() + selectedRole?.slice(1)
         }
       });
     }
-  }, [isAuthenticated, user, navigate, selectedRole, name]);
+  }, [isAuthenticated, user, navigate, selectedRole]);
 
   useEffect(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,7 +35,7 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || !selectedRole) return;
 
     try {
       await loginWithRedirect({
@@ -46,7 +46,7 @@ export default function Auth() {
         appState: {
           returnTo: '/dashboard',
           role: selectedRole,
-          name
+          name: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)
         }
       });
     } catch (error) {
@@ -55,7 +55,7 @@ export default function Auth() {
   };
 
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
-    if (!selectedRole || !name.trim()) return;
+    if (!selectedRole) return;
 
     try {
       await loginWithPopup({
@@ -65,7 +65,7 @@ export default function Auth() {
         appState: {
           returnTo: '/dashboard',
           role: selectedRole,
-          name
+          name: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)
         }
       });
     } catch (error) {
@@ -188,10 +188,10 @@ export default function Auth() {
           {/* Social Login */}
           <div className="space-y-3">
             <button 
-              disabled={!selectedRole || !name.trim()}
+              disabled={!selectedRole}
               onClick={() => handleSocialLogin('google')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                selectedRole && name.trim()
+                selectedRole
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
                   : 'bg-[#1A1A1A] text-gray-500 cursor-not-allowed'
               }`}
@@ -200,10 +200,10 @@ export default function Auth() {
               Continue with Google
             </button>
             <button 
-              disabled={!selectedRole || !name.trim()}
+              disabled={!selectedRole}
               onClick={() => handleSocialLogin('apple')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                selectedRole && name.trim()
+                selectedRole
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
                   : 'bg-[#1A1A1A] text-gray-500 cursor-not-allowed'
               }`}
