@@ -10,7 +10,7 @@ createRoot(document.getElementById("root")!).render(
       domain="dev-e4ku1v7ew7mf7e2u.us.auth0.com"
       clientId="1zcMLi8sGrpqg73VnXsZnJ4lbcBWQBQV"
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirect_uri: "https%3A%2F%2Fwww.curemedaddy.tech%2Fdashboard",
       }}
     >
       <App />
