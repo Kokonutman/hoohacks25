@@ -11,7 +11,7 @@ export default function Dashboard() {
   const handleLogout = () => {
     logout({
       logoutParams: {
-        returnTo: window.location.origin + '/auth'
+        returnTo: "https://curemedaddy.tech/"
       }
     });
   };
