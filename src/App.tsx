@@ -11,10 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={<Auth setRole={setRole} />} />
-        <Route
-          path="/dashboard"
-          element={<Dashboard role={role || "patient"} />}
-        />
+        <Route path="/dashboard" element={<Dashboard role={role} />} />
       </Routes>
     </Router>
   );
