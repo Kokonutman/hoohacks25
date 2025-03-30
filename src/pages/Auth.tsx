@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Apple } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Auth() {
+  const navigate = useNavigate();
   const [isSignIn, setIsSignIn] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'patient' | 'doctor' | 'hospital' | null>(null);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
@@ -14,8 +16,16 @@ export default function Auth() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmailValid = emailRegex.test(email);
     const isPasswordValid = password.length > 0;
-    setIsFormValid(isEmailValid && isPasswordValid && selectedRole !== null);
-  }, [email, password, selectedRole]);
+    const isNameValid = name.trim().length > 0;
+    setIsFormValid(isEmailValid && isPasswordValid && selectedRole !== null && isNameValid);
+  }, [email, password, selectedRole, name]);
+
+  const handleSubmit = (e: React.FormEvent, provider?: string) => {
+    e.preventDefault();
+    if (selectedRole) {
+      navigate('/dashboard', { state: { role: selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1), name } });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#121212] flex flex-col items-center justify-center px-4">
@@ -30,7 +40,7 @@ export default function Auth() {
           <div className="w-full border-t border-gray-700 my-4"></div>
 
           {/* Role Selection */}
-          <div className="mb-6">
+          <div className="mb-4">
             <h3 className="text-gray-400 text-sm mb-3 text-center">Profession</h3>
             <div className="grid grid-cols-3 gap-4">
               {['Patient', 'Doctor', 'Hospital'].map((role) => (
@@ -48,6 +58,18 @@ export default function Auth() {
               ))}
             </div>
           </div>
+
+          {/* Name Input */}
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full bg-[#2A2A2A] text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#4F8EF7]"
+            />
+          </div>
+
           <div className="w-full border-t border-gray-700 mb-6"></div>
 
           {/* Auth Tabs */}
@@ -71,7 +93,7 @@ export default function Auth() {
           </div>
 
           {/* Auth Form */}
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <input
                 type="email"
@@ -120,9 +142,10 @@ export default function Auth() {
           {/* Social Login */}
           <div className="space-y-3">
             <button 
-              disabled={!selectedRole}
+              disabled={!selectedRole || !name.trim()}
+              onClick={(e) => handleSubmit(e, 'google')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                selectedRole
+                selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
                   : 'bg-[#1A1A1A] text-gray-500 cursor-not-allowed'
               }`}
@@ -131,14 +154,15 @@ export default function Auth() {
               Continue with Google
             </button>
             <button 
-              disabled={!selectedRole}
+              disabled={!selectedRole || !name.trim()}
+              onClick={(e) => handleSubmit(e, 'apple')}
               className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                selectedRole
+                selectedRole && name.trim()
                   ? 'bg-[#2A2A2A] text-white hover:bg-[#3A3A3A]'
                   : 'bg-[#1A1A1A] text-gray-500 cursor-not-allowed'
               }`}
             >
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Apple_logo_white.svg/1724px-Apple_logo_white.svg.png" alt="Google" className="w-4.211 h-5" />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Apple_logo_white.svg/1724px-Apple_logo_white.svg.png" alt="Apple" className="w-4.211 h-5" />
               Continue with Apple
             </button>
           </div>

@@ -62,28 +62,28 @@ export default function Home() {
         <div 
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: 'url("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2072")',
+            backgroundImage: 'url("https://media.licdn.com/dms/image/v2/D5612AQFOY6zRo5lW2w/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1721173501099?e=2147483647&v=beta&t=7y1ed7xVciYNl44_LMGf7VagnV4gkOZonxXh5mmT-SU")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            maskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%)',
+            maskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.33) 0%, rgba(0, 0, 0, 0) 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.33) 0%, rgba(0, 0, 0, 0) 100%)',
           }}
         />
         <div className="container mx-auto px-4 py-32 text-center relative z-10">
-          <h1 className="text-7xl font-bold mb-8 text-white">
+          <h1 className="text-7xl font-bold mb-12 text-white">
             Navis<span className="text-[#4F8EF7]">AI</span>
           </h1>
-          <h2 className="text-3xl font-medium text-gray-300 mb-8">
+          <h2 className="text-3xl font-medium text-gray-300 mb-16">
             <span className="animate-shimmer-text">
               Navigate the future with artificial intelligence
             </span>
           </h2>
-          <p className="max-w-2xl mx-auto text-gray-200 mb-12 text-lg">
+          <p className="max-w-2xl mx-auto text-gray-200 mb-20 text-lg">
             Experience the next generation of navigation powered by cutting-edge AI technology. 
             NavisAI combines precision, intelligence, and reliability to transform your navigation experience.
           </p>
-          <div className="space-y-6">
+          <div className="space-y-8">
             <button 
               onClick={() => navigate('/auth')}
               className="bg-[#4F8EF7] text-white px-10 py-4 rounded-lg font-semibold transition-all duration-300 hover:bg-[#3D7FE8] hover:scale-105 hover:shadow-lg text-lg"
@@ -103,9 +103,9 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <div ref={featuresRef} className="bg-[#161616] py-20">
+      <div ref={featuresRef} className="bg-[#111111] py-24">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-white mb-16">
+          <h2 className="text-4xl font-bold text-center text-white mb-20">
             Features
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
